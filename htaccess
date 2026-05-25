@@ -1,0 +1,27 @@
+# ══════════════════════════════════════════════
+#  PG MUN — Apache Access Control
+#  Blocks direct browser access to CSS and JS
+#  folders while still allowing the HTML page
+#  to load them normally as linked resources.
+# ══════════════════════════════════════════════
+
+# Block direct access to the CSS folder
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Deny direct browser navigation to /CSS/ or /JS/
+  # (i.e. someone typing the URL, not the page requesting it)
+  RewriteCond %{HTTP_REFERER} !^https?://%{HTTP_HOST}/ [NC]
+  RewriteCond %{REQUEST_URI} ^/(CSS|JS)/ [NC]
+  RewriteRule ^ - [F,L]
+</IfModule>
+
+# Fallback: deny directory listing for both folders
+Options -Indexes
+
+<IfModule mod_authz_core.c>
+  # Apache 2.4+
+  <DirectoryMatch "^.*(CSS|JS)$">
+    # Directory browsing disabled; files still served to linked requests
+  </DirectoryMatch>
+</IfModule>
