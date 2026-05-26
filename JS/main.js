@@ -166,6 +166,11 @@ const committeeIcons = {
   IFI: 'https://res.cloudinary.com/dbuei75st/image/upload/Screenshot_2026-05-25_090356_y0szig.png',
   PAHO: 'https://res.cloudinary.com/dbuei75st/image/upload/image-removebg-preview_j2ctzd.png',
   UNHRC: 'https://res.cloudinary.com/dbuei75st/image/upload/ar_1:1,c_auto/image-removebg-preview_1_gg0ksd.png',
+  // All possible variations for Lok Sabha
+  'Lok Sabha': 'https://res.cloudinary.com/dbuei75st/image/upload/image-removebg-preview_5_dxe4jv.png',
+  'LOK SABHA': 'https://res.cloudinary.com/dbuei75st/image/upload/image-removebg-preview_5_dxe4jv.png',
+  'lok sabha': 'https://res.cloudinary.com/dbuei75st/image/upload/image-removebg-preview_5_dxe4jv.png',
+  'LS': 'https://res.cloudinary.com/dbuei75st/image/upload/image-removebg-preview_5_dxe4jv.png',
   // All possible variations for International Press
   'IP': 'https://res.cloudinary.com/dbuei75st/image/upload/ar_1:1,c_auto/ar_1:1,c_auto/e_brightness:100/e_contrast:level_-100;type_sigmoidal/IP__1_-removebg-preview_1_ska2jz.png',
   'International Press': 'https://res.cloudinary.com/dbuei75st/image/upload/ar_1:1,c_auto/ar_1:1,c_auto/e_brightness:100/e_contrast:level_-100;type_sigmoidal/IP__1_-removebg-preview_1_ska2jz.png',
