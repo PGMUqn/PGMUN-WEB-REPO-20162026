@@ -1,4 +1,4 @@
-  :root {
+:root {
     --void: #0D0A0A;
     --deep: #110D0D;
     --crimson: #A02828;
@@ -1637,6 +1637,15 @@
   }
 
   @media (max-width: 560px) {
+    /* Schedule - small phones */
+    .schedule-grid { padding: 2rem 1rem; gap: 1.5rem; }
+    .schedule-day-title { font-size: 1.3rem; margin-bottom: 1.2rem; }
+    .schedule-day-label { font-size: 0.75rem; letter-spacing: 0.2em; }
+    .timeline-item { padding-left: 1.4rem; padding-bottom: 1.4rem; }
+    .tl-time { font-size: 0.72rem; letter-spacing: 0.12em; }
+    .tl-event { font-size: 0.95rem; }
+    .tl-desc { font-size: 0.85rem; }
+
     .countdown { gap: 0.8rem; }
     .countdown-num { font-size: clamp(2.2rem, 10vw, 3rem); }
     .countdown-label { letter-spacing: 0.15em; }
@@ -1693,6 +1702,14 @@
   
   /* Extra small mobile devices */
   @media (max-width: 380px) {
+    /* Schedule - very small phones */
+    .schedule-grid { padding: 1.5rem 0.75rem; }
+    .schedule-day-title { font-size: 1.1rem; }
+    .tl-time { font-size: 0.65rem; }
+    .tl-event { font-size: 0.88rem; }
+    .tl-desc { font-size: 0.78rem; }
+    .timeline-item { padding-left: 1.2rem; padding-bottom: 1.2rem; }
+
     .hero-stats {
       gap: clamp(2rem, 10vw, 2.5rem);
     }
