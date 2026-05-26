@@ -1173,3 +1173,98 @@ function scrollToTop() {
   });
 }
 
+/* ══════════════════════════════════════
+   SCHEDULE — GOOGLE SHEETS INTEGRATION
+══════════════════════════════════════ */
+const SCHEDULE_API = 'https://script.google.com/macros/s/AKfycbzd1rLn2TTuGMo1544mrgk4-mtvIET5z4LYIO8cK-trYz1bH8r1ktSCL6sdqxe2JVI9/exec';
+let scheduleLoaded = false; // only fetch once per session
+
+async function loadSchedule() {
+  // Don't re-fetch if already loaded
+  if (scheduleLoaded) return;
+
+  const container = document.getElementById('schedule-container');
+  if (!container) return;
+
+  // Show loading state
+  container.innerHTML = `
+    <div style="text-align:center; padding:3rem; color:var(--ivory); opacity:0.5; font-family:'EB Garamond',serif;">
+      Loading schedule...
+    </div>`;
+
+  try {
+    const res = await fetch(SCHEDULE_API, { method: 'GET', redirect: 'follow' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    scheduleLoaded = true;
+
+    // ── COMING SOON MODE ──────────────────────────────────
+    if (data.coming_soon === true || data.coming_soon === 'TRUE') {
+      container.innerHTML = `
+        <div style="
+          text-align:center;
+          padding:5rem 2rem;
+          border:1px solid var(--border);
+          background:var(--card-bg);
+          max-width:600px;
+          margin:2rem auto;
+        ">
+          <div style="font-size:3rem; margin-bottom:1.2rem;">📅</div>
+          <h2 style="font-family:'Cinzel',serif; color:var(--gold); font-size:1.8rem; letter-spacing:0.08em; margin-bottom:0.75rem;">
+            Schedule Coming Soon
+          </h2>
+          <p style="font-family:'EB Garamond',serif; color:var(--ivory); opacity:0.6; font-size:1.05rem; line-height:1.7;">
+            The full event programme will be published here shortly.<br>Stay tuned!
+          </p>
+        </div>`;
+      return;
+    }
+
+    // ── RENDER FULL SCHEDULE ──────────────────────────────
+    if (!data.days || data.days.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center; padding:3rem; color:var(--muted); font-family:'EB Garamond',serif;">
+          No schedule data available yet.
+        </div>`;
+      return;
+    }
+
+    let html = '<div class="schedule-grid">';
+    data.days.forEach(day => {
+      html += `
+        <div>
+          <div class="schedule-day-label">${day.day_label}</div>
+          <div class="schedule-day-title">${day.day_title}</div>
+          <div class="timeline">`;
+      day.items.forEach(item => {
+        html += `
+            <div class="timeline-item">
+              <div class="tl-time">${item.time}</div>
+              <div class="tl-event">${item.event}</div>
+              <div class="tl-desc">${item.desc || ''}</div>
+            </div>`;
+      });
+      html += `</div></div>`;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+
+  } catch (e) {
+    console.error('Schedule load failed:', e);
+    scheduleLoaded = false; // allow retry
+    container.innerHTML = `
+      <div style="text-align:center; padding:3rem; font-family:'EB Garamond',serif;">
+        <p style="color:var(--phoenix); margin-bottom:1rem;">Could not load schedule. Please try again.</p>
+        <button onclick="scheduleLoaded=false; loadSchedule();" style="background:var(--phoenix); color:var(--ivory); border:none; padding:0.6rem 1.5rem; cursor:pointer; font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase;">Retry</button>
+      </div>`;
+  }
+}
+
+// Hook into the existing showPage so schedule loads when navigating to it
+const _origShowPage = window.showPage;
+window.showPage = function(name) {
+  _origShowPage(name);
+  if (name === 'schedule') loadSchedule();
+};
+
