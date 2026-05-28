@@ -1,5 +1,4 @@
 
-
 /* ══════════════════════════════════════
    DATA
 ══════════════════════════════════════ */
@@ -1258,10 +1257,10 @@ loadPhotos(); // Load photos from Google Sheets
 /* ══════════════════════════════════════
    SCROLL TO TOP FUNCTIONALITY
 ══════════════════════════════════════ */
-const scrollToTopBtn = document.getElementById('scroll-to-top');
-
 // Show/hide button based on scroll position
 window.addEventListener('scroll', () => {
+  const scrollToTopBtn = document.getElementById('scroll-to-top');
+  if (!scrollToTopBtn) return;
   if (window.pageYOffset > 300) {
     scrollToTopBtn.classList.add('visible');
   } else {
