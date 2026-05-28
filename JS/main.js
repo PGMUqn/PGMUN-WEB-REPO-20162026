@@ -1156,26 +1156,26 @@ if (APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL') {
 const REGISTRATION_STATUS_URL = 'https://script.google.com/macros/s/AKfycbzkx-lci33nin0zShST_jAUWW92JFlypLvEoNJrjni7OEuMcnXYD4clhFfbIJGiF5qFGw/exec';
 
 async function checkRegistrationStatus() {
-  if (REGISTRATION_STATUS_URL === 'YOUR_REGISTRATION_STATUS_SCRIPT_URL') return; // skip in dev
+  if (REGISTRATION_STATUS_URL === 'YOUR_REGISTRATION_STATUS_SCRIPT_URL') return;
 
   try {
     const res = await fetch(REGISTRATION_STATUS_URL, { method: 'GET', redirect: 'follow' });
-    if (!res.ok) return; // fail open — don't block if endpoint is down
+    if (!res.ok) return;
     const data = await res.json();
 
-    // data.closed should be true/false (or "TRUE"/"FALSE" from Sheets)
     const isClosed = data.closed === true || data.closed === 'TRUE';
     if (!isClosed) return;
 
-    // Build the overlay — position:fixed, z-index above everything, no close button
+    const msg = data.message || 'Registrations are currently closed.';
+
     const overlay = document.createElement('div');
     overlay.id = 'reg-closed-overlay';
-    overlay.setAttribute('aria-modal', 'true');
     overlay.setAttribute('role', 'alertdialog');
     overlay.style.cssText = `
-      position: fixed;
-      inset: 0;
-      z-index: 999999;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      min-height: 100%;
+      z-index: 900;
       background: rgba(8, 6, 6, 0.97);
       display: flex;
       align-items: center;
@@ -1184,8 +1184,6 @@ async function checkRegistrationStatus() {
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
     `;
-
-    const msg = data.message || 'Registrations are currently closed.';
 
     overlay.innerHTML = `
       <div style="
@@ -1230,19 +1228,37 @@ async function checkRegistrationStatus() {
       </div>
     `;
 
-    // Block keyboard escape and tab from leaving overlay
+    // Block escape key
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' || e.key === 'Tab') e.preventDefault();
+      if (e.key === 'Escape') e.preventDefault();
     });
 
-    // Block scroll on body
-    document.body.style.overflow = 'hidden';
+    // Inject into #page-register so navbar stays fully usable
+    const injectOverlay = () => {
+      const registerPage = document.getElementById('page-register');
+      if (registerPage && !document.getElementById('reg-closed-overlay')) {
+        registerPage.style.position = 'relative';
+        registerPage.appendChild(overlay);
+      }
+    };
 
-    // Append to body — runs after DOM is ready
-    document.body.appendChild(overlay);
+    // Inject on load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', injectOverlay);
+    } else {
+      injectOverlay();
+    }
+
+    // Also inject whenever showPage('register') is called (SPA navigation)
+    const _origShowPage = window.showPage;
+    window.showPage = function(page) {
+      _origShowPage && _origShowPage(page);
+      if (page === 'register') {
+        setTimeout(injectOverlay, 50);
+      }
+    };
 
   } catch (err) {
-    // Silently fail open — never block the page on a network error
     console.warn('Registration status check failed (fail-open):', err);
   }
 }
