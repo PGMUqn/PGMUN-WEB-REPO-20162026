@@ -1,4 +1,5 @@
 
+
 /* ══════════════════════════════════════
    DATA
 ══════════════════════════════════════ */
@@ -1146,8 +1147,111 @@ if (APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL') {
 }
 
 /* ══════════════════════════════════════
+   REGISTRATION STATUS CHECK
+   Fetches toggle + message from Apps Script.
+   If closed=TRUE → shows irremovable overlay.
+   Toggle FALSE (or fetch fails) → page works normally.
+══════════════════════════════════════ */
+
+// 🔧 REPLACE with your Registration Status Apps Script web app URL
+const REGISTRATION_STATUS_URL = 'https://script.google.com/macros/s/AKfycbzkx-lci33nin0zShST_jAUWW92JFlypLvEoNJrjni7OEuMcnXYD4clhFfbIJGiF5qFGw/exec';
+
+async function checkRegistrationStatus() {
+  if (REGISTRATION_STATUS_URL === 'YOUR_REGISTRATION_STATUS_SCRIPT_URL') return; // skip in dev
+
+  try {
+    const res = await fetch(REGISTRATION_STATUS_URL, { method: 'GET', redirect: 'follow' });
+    if (!res.ok) return; // fail open — don't block if endpoint is down
+    const data = await res.json();
+
+    // data.closed should be true/false (or "TRUE"/"FALSE" from Sheets)
+    const isClosed = data.closed === true || data.closed === 'TRUE';
+    if (!isClosed) return;
+
+    // Build the overlay — position:fixed, z-index above everything, no close button
+    const overlay = document.createElement('div');
+    overlay.id = 'reg-closed-overlay';
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('role', 'alertdialog');
+    overlay.style.cssText = `
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      background: rgba(8, 6, 6, 0.97);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    `;
+
+    const msg = data.message || 'Registrations are currently closed.';
+
+    overlay.innerHTML = `
+      <div style="
+        max-width: 540px;
+        width: 100%;
+        text-align: center;
+        border: 1px solid rgba(155,32,32,0.45);
+        background: rgba(20,15,15,0.95);
+        padding: clamp(2.5rem, 6vw, 4rem) clamp(2rem, 5vw, 3.5rem);
+        animation: fadeIn 0.4s ease;
+      ">
+        <div style="
+          width: 56px; height: 56px;
+          border: 1.5px solid rgba(155,32,32,0.6);
+          border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          margin: 0 auto 1.8rem;
+        ">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+               stroke="var(--phoenix, #9b2020)" stroke-width="1.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <h2 style="
+          font-family: 'Cinzel', serif;
+          font-size: clamp(1.1rem, 3.5vw, 1.6rem);
+          letter-spacing: 0.12em;
+          color: var(--ivory, #f5f0e8);
+          text-transform: uppercase;
+          margin-bottom: 1.2rem;
+          line-height: 1.3;
+        ">Registrations Closed</h2>
+        <p style="
+          font-family: 'EB Garamond', serif;
+          font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+          color: var(--parchment, #c8b99a);
+          line-height: 1.8;
+          opacity: 0.85;
+        ">${msg}</p>
+      </div>
+    `;
+
+    // Block keyboard escape and tab from leaving overlay
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' || e.key === 'Tab') e.preventDefault();
+    });
+
+    // Block scroll on body
+    document.body.style.overflow = 'hidden';
+
+    // Append to body — runs after DOM is ready
+    document.body.appendChild(overlay);
+
+  } catch (err) {
+    // Silently fail open — never block the page on a network error
+    console.warn('Registration status check failed (fail-open):', err);
+  }
+}
+
+/* ══════════════════════════════════════
    INIT
 ══════════════════════════════════════ */
+checkRegistrationStatus(); // Check reg status first — overlay if closed
 loadCommittees(); // Load committees from AppScript
 loadPhotos(); // Load photos from Google Sheets
 
