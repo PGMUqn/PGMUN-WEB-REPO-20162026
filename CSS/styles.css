@@ -1,5 +1,7 @@
 
 
+
+
   :root {
     --void: #0D0A0A;
     --deep: #110D0D;
@@ -1301,12 +1303,14 @@
   
   /* Photo container - rectangular */
   .sec-photo-container {
-    width: 100%;
-    height: 280px;
-    margin-bottom: 1.5rem;
+    width: 220px;
+    height: 220px;
+    margin: 0 auto 1.5rem auto;
     overflow: hidden;
-    border: 2px solid var(--border);
+    border-radius: 50%;
+    border: 3px solid var(--border);
     background: linear-gradient(135deg, var(--crimson), var(--deep));
+    flex-shrink: 0;
   }
   
   .sec-photo {
@@ -1460,7 +1464,8 @@
     }
     
     .sec-photo-container {
-      height: 240px;
+      width: 220px;
+      height: 220px;
     }
     
     .sec-name-core {
