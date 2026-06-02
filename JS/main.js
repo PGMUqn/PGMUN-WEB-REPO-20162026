@@ -1,4 +1,6 @@
 
+
+
 /* ══════════════════════════════════════
    DATA
 ══════════════════════════════════════ */
@@ -309,9 +311,17 @@ function openCommitteeModal(committeeId) {
   let leadershipHTML = '';
   if (committee.leadership) {
     const leaders = [];
-    if (committee.leadership.chair) leaders.push({...committee.leadership.chair, role: 'Chair'});
-    if (committee.leadership.viceChair) leaders.push({...committee.leadership.viceChair, role: 'Vice Chair'});
-    if (committee.leadership.rapporteur) leaders.push({...committee.leadership.rapporteur, role: 'Rapporteur'});
+    const isLokSabha = committee.name.trim().toLowerCase() === 'lok sabha';
+    const isDISEC = committee.name.trim().toUpperCase() === 'DISEC';
+
+    const chairLabel      = isLokSabha ? 'Speaker'        : 'Chair';
+    const viceChairLabel  = isLokSabha ? 'Deputy Speaker' : 'Vice Chair';
+    const rapporteurLabel = isLokSabha ? 'Scribe'         : 'Rapporteur';
+
+    if (committee.leadership.chair) leaders.push({...committee.leadership.chair, role: chairLabel});
+    if (isDISEC && committee.leadership.coChair) leaders.push({...committee.leadership.coChair, role: 'Co-Chair'});
+    if (committee.leadership.viceChair) leaders.push({...committee.leadership.viceChair, role: viceChairLabel});
+    if (committee.leadership.rapporteur) leaders.push({...committee.leadership.rapporteur, role: rapporteurLabel});
     
     leadershipHTML = `
       <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:1.5rem; margin-bottom:3rem;">
@@ -1386,4 +1396,5 @@ window.showPage = function(name) {
   _origShowPage(name);
   if (name === 'schedule') loadSchedule();
 };
+
 
