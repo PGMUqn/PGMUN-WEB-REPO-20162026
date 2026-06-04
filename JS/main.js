@@ -2,6 +2,7 @@
 
 
 
+
 /* ══════════════════════════════════════
    DATA
 ══════════════════════════════════════ */
@@ -585,6 +586,7 @@ function removeGrade8() {
    EMAIL VERIFICATION SYSTEM
 ══════════════════════════════════════ */
 const VERIFICATION_API_URL = 'https://script.google.com/macros/s/AKfycbyVmOVGH6bXkpvFhMuCNX2op95ENzg5--JUDgilrtn2K_NPGqXp5tZpEcAxhe3ZDRT5/exec';
+const VERIFICATION_TOKEN = 'pgmun2026_verify_xK9$mQ';
 let verificationTimeout;
 let isEmailVerified = false;
 
@@ -648,7 +650,7 @@ async function verifySchoolEmail(email) {
     
     try {
       const board = document.getElementById('r-board').value.toLowerCase();
-      const response = await fetch(`${VERIFICATION_API_URL}?email=${encodeURIComponent(email)}&board=${encodeURIComponent(board)}`);
+      const response = await fetch(`${VERIFICATION_API_URL}?token=${encodeURIComponent(VERIFICATION_TOKEN)}&email=${encodeURIComponent(email)}&board=${encodeURIComponent(board)}`);
       const data = await response.json();
       
       if (data.success && data.isValid) {
@@ -730,30 +732,39 @@ document.head.appendChild(style);
 
 function updatePaymentInfo() {
   const isSchoolStudent = document.getElementById('r-is-school-student').checked;
+  const board = document.getElementById('r-board').value; // 'CBSE', 'Cambridge', or ''
   const badge = document.getElementById('student-type-badge');
   const amount = document.getElementById('payment-amount');
-  const schoolInstructions = document.getElementById('school-payment-instructions');
-  const externalButton = document.getElementById('external-payment-button');
-  const btn = document.getElementById('payment-link-btn');
-  
-  // ⚠️ CONFIGURE THESE VALUES:
-  const EXTERNAL_LINK = 'https://web.zoment.com/euro/web/ng/external/child-order-creation/1639466678758674434/1789701426830643200'; // Replace with actual link
-  const SCHOOL_AMOUNT = '₹2,400';  // Replace with actual amount
-  const EXTERNAL_AMOUNT = '₹2,700'; // Replace with actual amount
-  
-  if (isSchoolStudent) {
-    badge.textContent = 'School Student';
-    amount.textContent = SCHOOL_AMOUNT;
-    // Show instructions, hide button
-    schoolInstructions.style.display = 'block';
-    externalButton.style.display = 'none';
+  // ⚠️ CONFIGURE QR CLOUDINARY URLs HERE:
+  const CBSE_QR_URL      = 'https://res.cloudinary.com/dbuei75st/image/upload/PGMUN_CBSE_Insider_jcpyoa.png';
+  const CAMBRIDGE_QR_URL = 'https://res.cloudinary.com/dbuei75st/image/upload/PGMUN_Cambridge_Insider_kwub4r.png';
+  const EXTERNAL_QR_URL  = 'https://res.cloudinary.com/dbuei75st/image/upload/PGMUN_Outsider_muka5r.png';
+
+  const INTERNAL_AMOUNT = '₹2,400';
+  const EXTERNAL_AMOUNT = '₹2,700';
+
+  // Hide all QR blocks first
+  document.getElementById('qr-cbse').style.display = 'none';
+  document.getElementById('qr-cambridge').style.display = 'none';
+  document.getElementById('qr-external').style.display = 'none';
+
+  if (isSchoolStudent && board === 'CBSE') {
+    badge.textContent = 'Phoenix Greens Student — CBSE';
+    amount.textContent = INTERNAL_AMOUNT;
+    document.getElementById('qr-cbse').style.display = 'block';
+    document.getElementById('qr-cbse-img').src = CBSE_QR_URL;
+
+  } else if (isSchoolStudent && board === 'Cambridge') {
+    badge.textContent = 'Phoenix Greens Student — Cambridge';
+    amount.textContent = INTERNAL_AMOUNT;
+    document.getElementById('qr-cambridge').style.display = 'block';
+    document.getElementById('qr-cambridge-img').src = CAMBRIDGE_QR_URL;
+
   } else {
-    badge.textContent = 'External Participant (Priority Round)';
+    badge.textContent = 'External Participant';
     amount.textContent = EXTERNAL_AMOUNT;
-    // Hide instructions, show button
-    schoolInstructions.style.display = 'none';
-    externalButton.style.display = 'block';
-    btn.onclick = () => window.open(EXTERNAL_LINK, '_blank');
+    document.getElementById('qr-external').style.display = 'block';
+    document.getElementById('qr-external-img').src = EXTERNAL_QR_URL;
   }
 }
 
@@ -1440,7 +1451,5 @@ window.showPage = function(name) {
   _origShowPage(name);
   if (name === 'schedule') loadSchedule();
 };
-
-
 
 
