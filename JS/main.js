@@ -2,7 +2,6 @@
 
 
 
-
 /* ══════════════════════════════════════
    DATA
 ══════════════════════════════════════ */
@@ -495,7 +494,7 @@ function addAwardEntry() {
 
 /* ══ STUDENT CATEGORY & PAYMENT ══ */
 
-// Step 1: Checkbox → show board dropdown, hide email field
+// Step 1: Checkbox -> show board dropdown, hide email field
 function toggleSchoolStudent() {
   const checkbox = document.getElementById('r-is-school-student');
   const boardField = document.getElementById('board-select-field');
@@ -503,10 +502,8 @@ function toggleSchoolStudent() {
   const gradeSelect = document.getElementById('r-grade');
 
   if (checkbox.checked) {
-    // Show board dropdown, keep email hidden until board chosen
     boardField.style.display = 'block';
     emailField.style.display = 'none';
-    // Lock grade until email verified
     gradeSelect.disabled = true;
     gradeSelect.style.opacity = '0.4';
     gradeSelect.style.cursor = 'not-allowed';
@@ -514,7 +511,6 @@ function toggleSchoolStudent() {
     gradeSelect.value = '';
     removeGrade8();
   } else {
-    // Unchecked — hide both, reset everything
     boardField.style.display = 'none';
     emailField.style.display = 'none';
     document.getElementById('r-board').value = '';
@@ -524,7 +520,6 @@ function toggleSchoolStudent() {
     gradeSelect.title = '';
     gradeSelect.value = '';
     removeGrade8();
-    // Reset verification state
     const badge = document.getElementById('email-verification-badge');
     const input = document.getElementById('r-school-email');
     const helpText = document.getElementById('email-help-text');
@@ -537,24 +532,22 @@ function toggleSchoolStudent() {
   }
 }
 
-// Step 2: Board selected → show email verification field
+// Step 2: Board selected -> show email verification field
 function toggleBoardEmail() {
   const board = document.getElementById('r-board').value;
   const emailField = document.getElementById('school-email-field');
 
   if (board) {
     emailField.style.display = 'block';
-    // Update placeholder hint based on board
     const input = document.getElementById('r-school-email');
     const helpText = document.getElementById('email-help-text');
     if (board === 'CBSE') {
       input.placeholder = 'student@phoenixgreens.com';
       helpText.textContent = 'Enter your Phoenix Greens CBSE email for verification';
     } else {
-      input.placeholder = '3XXO@phoenixgreens.com';
+      input.placeholder = 'cam1008@phoenixgreens.com';
       helpText.textContent = 'Enter your Phoenix Greens Cambridge email for verification';
     }
-    // Reset any previous verification when board changes
     input.value = '';
     input.style.borderColor = 'var(--border)';
     document.getElementById('email-verification-badge').style.display = 'none';
@@ -654,7 +647,8 @@ async function verifySchoolEmail(email) {
     }
     
     try {
-      const response = await fetch(`${VERIFICATION_API_URL}?action=verify&email=${encodeURIComponent(email)}`);
+      const board = document.getElementById('r-board').value.toLowerCase();
+      const response = await fetch(`${VERIFICATION_API_URL}?email=${encodeURIComponent(email)}&board=${encodeURIComponent(board)}`);
       const data = await response.json();
       
       if (data.success && data.isValid) {
@@ -848,7 +842,6 @@ function nextStep(from) {
       if (!schoolEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(schoolEmail)) {
         showFormError('Please enter a valid school email address.'); return;
       }
-      // Check if email verification is enabled and email is verified
       if (VERIFICATION_API_URL !== 'YOUR_VERIFICATION_API_URL' && !isEmailVerified) {
         showFormError('Please wait for email verification to complete, or make sure your school email is verified.'); return;
       }
@@ -1447,5 +1440,7 @@ window.showPage = function(name) {
   _origShowPage(name);
   if (name === 'schedule') loadSchedule();
 };
+
+
 
 
