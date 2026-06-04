@@ -735,9 +735,9 @@ function updatePaymentInfo() {
   const badge = document.getElementById('student-type-badge');
   const amount = document.getElementById('payment-amount');
   // ⚠️ CONFIGURE QR CLOUDINARY URLs HERE:
-  const CBSE_QR_URL      = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto,q_auto/PGMUN_CBSE_Insider_jcpyoa.png';
-  const CAMBRIDGE_QR_URL = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto,q_auto/PGMUN_Cambridge_Insider_kwub4r.png';
-  const EXTERNAL_QR_URL  = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto,q_auto/PGMUN_Outsider_muka5r.png';
+  const CBSE_QR_URL      = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto/q_auto/PGMUN_CBSE_Insider_jcpyoa.png';
+  const CAMBRIDGE_QR_URL = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto/q_auto/PGMUN_Cambridge_Insider_kwub4r.png';
+  const EXTERNAL_QR_URL  = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto/q_auto/PGMUN_Outsider_muka5r.png';
 
   const INTERNAL_AMOUNT = '₹2,400';
   const EXTERNAL_AMOUNT = '₹2,700';
