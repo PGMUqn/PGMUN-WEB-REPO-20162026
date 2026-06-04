@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <!--
@@ -750,134 +749,70 @@
         </div>
 
         <!-- Payment Instructions (School Students) / Payment Button (External) -->
-        <div id="school-payment-instructions" style="display:none; margin-bottom:2rem;">
-          <div style="border:1px solid rgba(155,32,32,0.35); padding:1.8rem 1.6rem; background:rgba(155,32,32,0.04);">
-            <div style="font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.3em; color:var(--phoenix); text-transform:uppercase; margin-bottom:1.5rem; text-align:center;">Payment Instructions for School Students</div>
-            
-            <div style="font-size:0.75rem; color:var(--parchment); line-height:1.8; margin-bottom:1.5rem;">
-              Follow these steps to complete your payment through the <strong style="color:var(--ivory);">Web Genie School App</strong>:
-            </div>
 
-            <!-- Step 1 -->
-            <div style="border-left:3px solid var(--phoenix); padding-left:1.2rem; margin-bottom:1.5rem;">
-              <div style="display:flex; align-items:center; gap:0.8rem; margin-bottom:0.8rem;">
-                <div style="background:var(--phoenix); color:var(--ivory); width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:0.75rem; font-weight:600; flex-shrink:0;">1</div>
-                <div style="font-family:'Cinzel',serif; font-size:0.8rem; letter-spacing:0.1em; color:var(--ivory);">Open the Web Genie App IN YOUR PHONE</div>
+        <!-- QR Code Block — CBSE Internal -->
+        <div id="qr-cbse" style="display:none; margin-bottom:2rem;">
+          <div style="border:1px solid rgba(155,32,32,0.35); padding:1.8rem 1.6rem; background:rgba(155,32,32,0.04); text-align:center;">
+            <div style="font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.3em; color:var(--phoenix); text-transform:uppercase; margin-bottom:1.2rem;">Scan to Pay — CBSE Students</div>
+            <div style="background:rgba(13,10,10,0.6); border:1px solid var(--border); padding:1.2rem; display:inline-block; border-radius:4px; margin-bottom:1.2rem;">
+              <img id="qr-cbse-img" src="YOUR_CBSE_QR_CLOUDINARY_URL" alt="CBSE Payment QR Code"
+                   style="width:200px; height:200px; display:block; margin:0 auto;"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
+              <div style="width:200px; height:200px; display:none; align-items:center; justify-content:center; flex-direction:column; border:1px dashed var(--border);">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.4; margin-bottom:0.5rem;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h.01M14 17h.01M17 14h.01M17 17h.01M20 14h.01M20 17h.01M20 20h.01"/></svg>
+                <span style="font-size:0.65rem; color:var(--muted); font-family:'Cinzel',serif; letter-spacing:0.1em; text-transform:uppercase;">QR Coming Soon</span>
               </div>
-              <!-- 🔥 CLOUDINARY IMAGE - STEP 1: Open Web Genie App -->
-              <div style="background:rgba(13,10,10,0.6); border:1px solid var(--border); padding:1rem; margin-bottom:0.6rem; text-align:center; overflow:hidden; border-radius:4px;">
-                <img src="https://res.cloudinary.com/dbuei75st/image/upload/s1_bycqjy.jpg" 
-                     alt="Open Web Genie App" 
-                     style="max-width:100%; height:auto; display:block; margin:0 auto; border-radius:2px;"
-                     loading="lazy"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
-                <div style="color:var(--muted); font-size:0.7rem; font-style:italic; display:none; min-height:120px; align-items:center; justify-content:center; flex-direction:column;">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 0.5rem; display:block; opacity:0.5;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-                  Screenshot placeholder
-                </div>
-              </div>
-              <p style="font-size:0.72rem; color:var(--parchment); opacity:0.7; line-height:1.6;">Open the <strong>Web Genie</strong> app on your <strong>mobile phone</strong> (this cannot be done on a laptop).</p>
             </div>
-
-            <!-- Step 2 -->
-            <div style="border-left:3px solid var(--phoenix); padding-left:1.2rem; margin-bottom:1.5rem;">
-              <div style="display:flex; align-items:center; gap:0.8rem; margin-bottom:0.8rem;">
-                <div style="background:var(--phoenix); color:var(--ivory); width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:0.75rem; font-weight:600; flex-shrink:0;">2</div>
-                <div style="font-family:'Cinzel',serif; font-size:0.8rem; letter-spacing:0.1em; color:var(--ivory);">Navigate to eStore</div>
-              </div>
-              <!-- 🔥 CLOUDINARY IMAGE - STEP 2: Navigate to eStore -->
-              <div style="background:rgba(13,10,10,0.6); border:1px solid var(--border); padding:1rem; margin-bottom:0.6rem; text-align:center; overflow:hidden; border-radius:4px;">
-                <img src="https://res.cloudinary.com/dbuei75st/image/upload/s2_xtybck.jpg" 
-                     alt="Navigate to eStore" 
-                     style="max-width:100%; height:auto; display:block; margin:0 auto; border-radius:2px;"
-                     loading="lazy"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
-                <div style="color:var(--muted); font-size:0.7rem; font-style:italic; display:none; min-height:120px; align-items:center; justify-content:center; flex-direction:column;">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 0.5rem; display:block; opacity:0.5;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-                  Screenshot placeholder
-                </div>
-              </div>
-              <p style="font-size:0.72rem; color:var(--parchment); opacity:0.7; line-height:1.6;">Go to the <strong>eStore</strong> section in the app.</p>
-            </div>
-
-            <!-- Step 3 -->
-            <div style="border-left:3px solid var(--phoenix); padding-left:1.2rem; margin-bottom:1.5rem;">
-              <div style="display:flex; align-items:center; gap:0.8rem; margin-bottom:0.8rem;">
-                <div style="background:var(--phoenix); color:var(--ivory); width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:0.75rem; font-weight:600; flex-shrink:0;">3</div>
-                <div style="font-family:'Cinzel',serif; font-size:0.8rem; letter-spacing:0.1em; color:var(--ivory);">Select Centre of Excellence</div>
-              </div>
-              <!-- 🔥 CLOUDINARY IMAGE - STEP 3: Select Centre of Excellence -->
-              <div style="background:rgba(13,10,10,0.6); border:1px solid var(--border); padding:1rem; margin-bottom:0.6rem; text-align:center; overflow:hidden; border-radius:4px;">
-                <img src="https://res.cloudinary.com/dbuei75st/image/upload/s3_o3qpsy.jpg" 
-                     alt="Select Centre of Excellence" 
-                     style="max-width:100%; height:auto; display:block; margin:0 auto; border-radius:2px;"
-                     loading="lazy"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
-                <div style="color:var(--muted); font-size:0.7rem; font-style:italic; display:none; min-height:120px; align-items:center; justify-content:center; flex-direction:column;">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 0.5rem; display:block; opacity:0.5;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-                  Screenshot placeholder
-                </div>
-              </div>
-              <p style="font-size:0.72rem; color:var(--parchment); opacity:0.7; line-height:1.6;">In the eStore, select <strong>Centre of Excellence</strong>.</p>
-            </div>
-
-            <!-- Step 4 -->
-            <div style="border-left:3px solid var(--phoenix); padding-left:1.2rem; margin-bottom:1.5rem;">
-              <div style="display:flex; align-items:center; gap:0.8rem; margin-bottom:0.8rem;">
-                <div style="background:var(--phoenix); color:var(--ivory); width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:0.75rem; font-weight:600; flex-shrink:0;">4</div>
-                <div style="font-family:'Cinzel',serif; font-size:0.8rem; letter-spacing:0.1em; color:var(--ivory);">Tap on PGMUN2026</div>
-              </div>
-              <!-- 🔥 CLOUDINARY IMAGE - STEP 4: Tap on PGMUN2026 -->
-              <div style="background:rgba(13,10,10,0.6); border:1px solid var(--border); padding:1rem; margin-bottom:0.6rem; text-align:center; overflow:hidden; border-radius:4px;">
-                <img src="https://res.cloudinary.com/dbuei75st/image/upload/s4_bjnbyc.jpg" 
-                     alt="Tap on PGMUN2026" 
-                     style="max-width:100%; height:auto; display:block; margin:0 auto; border-radius:2px;"
-                     loading="lazy"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
-                <div style="color:var(--muted); font-size:0.7rem; font-style:italic; display:none; min-height:120px; align-items:center; justify-content:center; flex-direction:column;">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 0.5rem; display:block; opacity:0.5;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-                  Screenshot placeholder
-                </div>
-              </div>
-              <p style="font-size:0.72rem; color:var(--parchment); opacity:0.7; line-height:1.6;">Find and tap on <strong>PGMUN2026</strong> from the list.</p>
-            </div>
-
-            <!-- Step 5 -->
-            <div style="border-left:3px solid var(--phoenix); padding-left:1.2rem; margin-bottom:1rem;">
-              <div style="display:flex; align-items:center; gap:0.8rem; margin-bottom:0.8rem;">
-                <div style="background:var(--phoenix); color:var(--ivory); width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:0.75rem; font-weight:600; flex-shrink:0;">5</div>
-                <div style="font-family:'Cinzel',serif; font-size:0.8rem; letter-spacing:0.1em; color:var(--ivory);">Complete Payment</div>
-              </div>
-              <!-- 🔥 CLOUDINARY IMAGE - STEP 5: Complete Payment -->
-              <div style="background:rgba(13,10,10,0.6); border:1px solid var(--border); padding:1rem; margin-bottom:0.6rem; text-align:center; overflow:hidden; border-radius:4px;">
-                <img src="https://res.cloudinary.com/dbuei75st/image/upload/s5_rbmisr.jpg" 
-                     alt="Complete Payment Confirmation" 
-                     style="max-width:100%; height:auto; display:block; margin:0 auto; border-radius:2px;"
-                     loading="lazy"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
-                <div style="color:var(--muted); font-size:0.7rem; font-style:italic; display:none; min-height:120px; align-items:center; justify-content:center; flex-direction:column;">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 0.5rem; display:block; opacity:0.5;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-                  Screenshot placeholder
-                </div>
-              </div>
-              <p style="font-size:0.9rem; color:var(--parchment); opacity:0.7; line-height:1.6;">Complete the payment of <strong>₹2,400</strong> and take a screenshot of your payment confirmation.</p>
-            </div>
-
-            <div style="border-top:1px solid rgba(155,32,32,0.2); padding-top:1.2rem; margin-top:1.5rem;">
-              <p style="font-size:0.72rem; color:var(--gold); line-height:1.6; text-align:center;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:0.4rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                After payment, upload your payment confirmation screenshot below.
-              </p>
-            </div>
+            <p style="font-size:0.72rem; color:var(--parchment); opacity:0.7; line-height:1.8;">
+              Open any UPI app · Scan the QR code · Pay <strong style="color:var(--gold);">₹2,400</strong><br/>
+              Take a screenshot of your payment confirmation and upload it below.
+            </p>
           </div>
         </div>
 
-        <!-- External Payment Button -->
-        <div id="external-payment-button" style="display:none; margin-bottom:2rem;">
-          <button id="payment-link-btn" type="button" class="btn-primary" style="width:100%; padding:1rem 2rem; text-align:center; font-size:0.9rem;">
-            Proceed to Payment Portal →
-          </button>
+        <!-- QR Code Block — Cambridge Internal -->
+        <div id="qr-cambridge" style="display:none; margin-bottom:2rem;">
+          <div style="border:1px solid rgba(155,32,32,0.35); padding:1.8rem 1.6rem; background:rgba(155,32,32,0.04); text-align:center;">
+            <div style="font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.3em; color:var(--phoenix); text-transform:uppercase; margin-bottom:1.2rem;">Scan to Pay — Cambridge Students</div>
+            <div style="background:rgba(13,10,10,0.6); border:1px solid var(--border); padding:1.2rem; display:inline-block; border-radius:4px; margin-bottom:1.2rem;">
+              <img id="qr-cambridge-img" src="YOUR_CAMBRIDGE_QR_CLOUDINARY_URL" alt="Cambridge Payment QR Code"
+                   style="width:200px; height:200px; display:block; margin:0 auto;"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
+              <div style="width:200px; height:200px; display:none; align-items:center; justify-content:center; flex-direction:column; border:1px dashed var(--border);">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.4; margin-bottom:0.5rem;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h.01M14 17h.01M17 14h.01M17 17h.01M20 14h.01M20 17h.01M20 20h.01"/></svg>
+                <span style="font-size:0.65rem; color:var(--muted); font-family:'Cinzel',serif; letter-spacing:0.1em; text-transform:uppercase;">QR Coming Soon</span>
+              </div>
+            </div>
+            <p style="font-size:0.72rem; color:var(--parchment); opacity:0.7; line-height:1.8;">
+              Open any UPI app · Scan the QR code · Pay <strong style="color:var(--gold);">₹2,400</strong><br/>
+              Take a screenshot of your payment confirmation and upload it below.
+            </p>
+          </div>
         </div>
+
+        <!-- QR Code Block — External -->
+        <div id="qr-external" style="display:none; margin-bottom:2rem;">
+          <div style="border:1px solid rgba(155,32,32,0.35); padding:1.8rem 1.6rem; background:rgba(155,32,32,0.04); text-align:center;">
+            <div style="font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.3em; color:var(--phoenix); text-transform:uppercase; margin-bottom:1.2rem;">Scan to Pay — External Participants</div>
+            <div style="background:rgba(13,10,10,0.6); border:1px solid var(--border); padding:1.2rem; display:inline-block; border-radius:4px; margin-bottom:1.2rem;">
+              <img id="qr-external-img" src="YOUR_EXTERNAL_QR_CLOUDINARY_URL" alt="External Payment QR Code"
+                   style="width:200px; height:200px; display:block; margin:0 auto;"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
+              <div style="width:200px; height:200px; display:none; align-items:center; justify-content:center; flex-direction:column; border:1px dashed var(--border);">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.4; margin-bottom:0.5rem;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h.01M14 17h.01M17 14h.01M17 17h.01M20 14h.01M20 17h.01M20 20h.01"/></svg>
+                <span style="font-size:0.65rem; color:var(--muted); font-family:'Cinzel',serif; letter-spacing:0.1em; text-transform:uppercase;">QR Coming Soon</span>
+              </div>
+            </div>
+            <p style="font-size:0.72rem; color:var(--parchment); opacity:0.7; line-height:1.8;">
+              Open any UPI app · Scan the QR code · Pay <strong style="color:var(--gold);">₹2,700</strong><br/>
+              Take a screenshot of your payment confirmation and upload it below.
+            </p>
+          </div>
+        </div>
+
+
+        <!-- External Payment Button (legacy — now replaced by QR code above) -->
+        <div id="external-payment-button" style="display:none;"></div>
 
         <!-- Payment Proof Upload -->
         <div style="margin-bottom:1rem;">
