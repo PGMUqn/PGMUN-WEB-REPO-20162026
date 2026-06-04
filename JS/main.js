@@ -2,7 +2,6 @@
 
 
 
-
 /* ══════════════════════════════════════
    DATA
 ══════════════════════════════════════ */
@@ -736,35 +735,35 @@ function updatePaymentInfo() {
   const badge = document.getElementById('student-type-badge');
   const amount = document.getElementById('payment-amount');
   // ⚠️ CONFIGURE QR CLOUDINARY URLs HERE:
-  const CBSE_QR_URL      = 'https://res.cloudinary.com/dbuei75st/image/upload/PGMUN_CBSE_Insider_jcpyoa.png';
-  const CAMBRIDGE_QR_URL = 'https://res.cloudinary.com/dbuei75st/image/upload/PGMUN_Cambridge_Insider_kwub4r.png';
-  const EXTERNAL_QR_URL  = 'https://res.cloudinary.com/dbuei75st/image/upload/PGMUN_Outsider_muka5r.png';
+  const CBSE_QR_URL      = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto,q_auto/PGMUN_CBSE_Insider_jcpyoa.png';
+  const CAMBRIDGE_QR_URL = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto,q_auto/PGMUN_Cambridge_Insider_kwub4r.png';
+  const EXTERNAL_QR_URL  = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto,q_auto/PGMUN_Outsider_muka5r.png';
 
   const INTERNAL_AMOUNT = '₹2,400';
   const EXTERNAL_AMOUNT = '₹2,700';
 
-  // Hide all QR blocks first
-  document.getElementById('qr-cbse').style.display = 'none';
-  document.getElementById('qr-cambridge').style.display = 'none';
-  document.getElementById('qr-external').style.display = 'none';
+  // Hide all QR blocks first (null-safe)
+  const qrCbse      = document.getElementById('qr-cbse');
+  const qrCambridge = document.getElementById('qr-cambridge');
+  const qrExternal  = document.getElementById('qr-external');
+  if (qrCbse)      qrCbse.style.display      = 'none';
+  if (qrCambridge) qrCambridge.style.display  = 'none';
+  if (qrExternal)  qrExternal.style.display   = 'none';
 
   if (isSchoolStudent && board === 'CBSE') {
     badge.textContent = 'Phoenix Greens Student — CBSE';
     amount.textContent = INTERNAL_AMOUNT;
-    document.getElementById('qr-cbse').style.display = 'block';
-    document.getElementById('qr-cbse-img').src = CBSE_QR_URL;
+    if (qrCbse) { qrCbse.style.display = 'block'; document.getElementById('qr-cbse-img').src = CBSE_QR_URL; }
 
   } else if (isSchoolStudent && board === 'Cambridge') {
     badge.textContent = 'Phoenix Greens Student — Cambridge';
     amount.textContent = INTERNAL_AMOUNT;
-    document.getElementById('qr-cambridge').style.display = 'block';
-    document.getElementById('qr-cambridge-img').src = CAMBRIDGE_QR_URL;
+    if (qrCambridge) { qrCambridge.style.display = 'block'; document.getElementById('qr-cambridge-img').src = CAMBRIDGE_QR_URL; }
 
   } else {
     badge.textContent = 'External Participant';
     amount.textContent = EXTERNAL_AMOUNT;
-    document.getElementById('qr-external').style.display = 'block';
-    document.getElementById('qr-external-img').src = EXTERNAL_QR_URL;
+    if (qrExternal) { qrExternal.style.display = 'block'; document.getElementById('qr-external-img').src = EXTERNAL_QR_URL; }
   }
 }
 
