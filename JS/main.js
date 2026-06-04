@@ -3,7 +3,6 @@
 
 
 
-
 /* ══════════════════════════════════════
    DATA
 ══════════════════════════════════════ */
@@ -495,37 +494,36 @@ function addAwardEntry() {
 }
 
 /* ══ STUDENT CATEGORY & PAYMENT ══ */
-function toggleSchoolEmail() {
+
+// Step 1: Checkbox → show board dropdown, hide email field
+function toggleSchoolStudent() {
   const checkbox = document.getElementById('r-is-school-student');
-  const field = document.getElementById('school-email-field');
-  const boardField = document.getElementById('school-board-field');
+  const boardField = document.getElementById('board-select-field');
+  const emailField = document.getElementById('school-email-field');
   const gradeSelect = document.getElementById('r-grade');
-  field.style.display = checkbox.checked ? 'block' : 'none';
 
   if (checkbox.checked) {
-    // Lock grade until email verified; hide board until email verified
+    // Show board dropdown, keep email hidden until board chosen
+    boardField.style.display = 'block';
+    emailField.style.display = 'none';
+    // Lock grade until email verified
     gradeSelect.disabled = true;
     gradeSelect.style.opacity = '0.4';
     gradeSelect.style.cursor = 'not-allowed';
     gradeSelect.title = 'Verify your school email first';
     gradeSelect.value = '';
     removeGrade8();
-    // Hide board dropdown until verified
-    if (boardField) boardField.style.display = 'none';
   } else {
-    // Unchecked — external user: unlock, no Grade 8, reset
+    // Unchecked — hide both, reset everything
+    boardField.style.display = 'none';
+    emailField.style.display = 'none';
+    document.getElementById('r-board').value = '';
     gradeSelect.disabled = false;
     gradeSelect.style.opacity = '1';
     gradeSelect.style.cursor = 'pointer';
     gradeSelect.title = '';
     gradeSelect.value = '';
     removeGrade8();
-    // Hide board dropdown
-    if (boardField) {
-      boardField.style.display = 'none';
-      const boardSelect = document.getElementById('r-school-board');
-      if (boardSelect) boardSelect.value = '';
-    }
     // Reset verification state
     const badge = document.getElementById('email-verification-badge');
     const input = document.getElementById('r-school-email');
@@ -536,6 +534,40 @@ function toggleSchoolEmail() {
     helpText.textContent = 'Enter your official Phoenix Greens email for verification';
     helpText.style.color = 'var(--muted)';
     isEmailVerified = false;
+  }
+}
+
+// Step 2: Board selected → show email verification field
+function toggleBoardEmail() {
+  const board = document.getElementById('r-board').value;
+  const emailField = document.getElementById('school-email-field');
+
+  if (board) {
+    emailField.style.display = 'block';
+    // Update placeholder hint based on board
+    const input = document.getElementById('r-school-email');
+    const helpText = document.getElementById('email-help-text');
+    if (board === 'CBSE') {
+      input.placeholder = 'student@phoenixgreens.com';
+      helpText.textContent = 'Enter your Phoenix Greens CBSE email for verification';
+    } else {
+      input.placeholder = '3XXO@phoenixgreens.com';
+      helpText.textContent = 'Enter your Phoenix Greens Cambridge email for verification';
+    }
+    // Reset any previous verification when board changes
+    input.value = '';
+    input.style.borderColor = 'var(--border)';
+    document.getElementById('email-verification-badge').style.display = 'none';
+    isEmailVerified = false;
+    const gradeSelect = document.getElementById('r-grade');
+    gradeSelect.disabled = true;
+    gradeSelect.style.opacity = '0.4';
+    gradeSelect.style.cursor = 'not-allowed';
+    gradeSelect.title = 'Verify your school email first';
+    gradeSelect.value = '';
+    removeGrade8();
+  } else {
+    emailField.style.display = 'none';
   }
 }
 
@@ -626,7 +658,7 @@ async function verifySchoolEmail(email) {
       const data = await response.json();
       
       if (data.success && data.isValid) {
-        // Email verified ✓ — unlock grade dropdown, add Grade 8, show board dropdown
+        // Email verified ✓ — unlock grade dropdown and add Grade 8
         isEmailVerified = true;
         badge.style.background = 'rgba(74,222,128,0.1)';
         badge.style.color = '#4ade80';
@@ -646,9 +678,6 @@ async function verifySchoolEmail(email) {
         gradeSelectV.style.cursor = 'pointer';
         gradeSelectV.title = '';
         addGrade8();
-        // Show board dropdown now that email is verified
-        const boardField = document.getElementById('school-board-field');
-        if (boardField) boardField.style.display = 'block';
       } else {
         // Email not found — keep grade locked, no Grade 8
         isEmailVerified = false;
@@ -705,157 +734,33 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-/* ══════════════════════════════════════
-   PAYMENT INFO — QR CODE DISPLAY
-══════════════════════════════════════ */
-// ⚠️ REPLACE THESE WITH YOUR ACTUAL CLOUDINARY QR CODE URLs
-const QR_CODES = {
-  cbse:     'https://res.cloudinary.com/dbuei75st/image/upload/v1/pgmun/qr-cbse-placeholder.png',
-  cambridge:'https://res.cloudinary.com/dbuei75st/image/upload/v1/pgmun/qr-cambridge-placeholder.png',
-  external: 'https://res.cloudinary.com/dbuei75st/image/upload/v1/pgmun/qr-external-placeholder.png'
-};
-
-const PAYMENT_AMOUNTS = {
-  cbse:     '₹2,400',
-  cambridge:'₹2,400',
-  external: '₹2,700'
-};
-
-const PAYMENT_LABELS = {
-  cbse:     'CBSE Internal Delegate',
-  cambridge:'Cambridge Internal Delegate',
-  external: 'External Participant'
-};
-
 function updatePaymentInfo() {
   const isSchoolStudent = document.getElementById('r-is-school-student').checked;
-  const badge   = document.getElementById('student-type-badge');
-  const amount  = document.getElementById('payment-amount');
-  const qrPanel = document.getElementById('payment-qr-panel');
-
-  let key; // 'cbse' | 'cambridge' | 'external'
-
+  const badge = document.getElementById('student-type-badge');
+  const amount = document.getElementById('payment-amount');
+  const schoolInstructions = document.getElementById('school-payment-instructions');
+  const externalButton = document.getElementById('external-payment-button');
+  const btn = document.getElementById('payment-link-btn');
+  
+  // ⚠️ CONFIGURE THESE VALUES:
+  const EXTERNAL_LINK = 'https://web.zoment.com/euro/web/ng/external/child-order-creation/1639466678758674434/1789701426830643200'; // Replace with actual link
+  const SCHOOL_AMOUNT = '₹2,400';  // Replace with actual amount
+  const EXTERNAL_AMOUNT = '₹2,700'; // Replace with actual amount
+  
   if (isSchoolStudent) {
-    const board = (document.getElementById('r-school-board')?.value || '').toLowerCase();
-    key = board === 'cambridge' ? 'cambridge' : 'cbse';
+    badge.textContent = 'School Student';
+    amount.textContent = SCHOOL_AMOUNT;
+    // Show instructions, hide button
+    schoolInstructions.style.display = 'block';
+    externalButton.style.display = 'none';
   } else {
-    key = 'external';
+    badge.textContent = 'External Participant (Priority Round)';
+    amount.textContent = EXTERNAL_AMOUNT;
+    // Hide instructions, show button
+    schoolInstructions.style.display = 'none';
+    externalButton.style.display = 'block';
+    btn.onclick = () => window.open(EXTERNAL_LINK, '_blank');
   }
-
-  if (badge)  badge.textContent  = PAYMENT_LABELS[key];
-  if (amount) amount.textContent = PAYMENT_AMOUNTS[key];
-
-  if (qrPanel) {
-    qrPanel.innerHTML = buildQRPanel(key);
-  }
-}
-
-function buildQRPanel(key) {
-  const label  = PAYMENT_LABELS[key];
-  const amt    = PAYMENT_AMOUNTS[key];
-  const qrUrl  = QR_CODES[key];
-
-  // Color accent per type
-  const accentMap = {
-    cbse:      { color: '#f5e19a', border: 'rgba(245,225,154,0.3)', bg: 'rgba(245,225,154,0.05)' },
-    cambridge: { color: '#7ec8e3', border: 'rgba(126,200,227,0.3)', bg: 'rgba(126,200,227,0.05)' },
-    external:  { color: '#c8a97e', border: 'rgba(200,169,126,0.3)', bg: 'rgba(200,169,126,0.05)' }
-  };
-  const ac = accentMap[key];
-
-  return `
-    <div style="
-      border: 1px solid ${ac.border};
-      background: ${ac.bg};
-      padding: clamp(1.5rem, 4vw, 2.5rem);
-      text-align: center;
-      animation: fadeIn 0.35s ease;
-    ">
-      <!-- Header -->
-      <div style="
-        font-family: 'Cinzel', serif;
-        font-size: 0.6rem;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: ${ac.color};
-        margin-bottom: 0.4rem;
-        opacity: 0.8;
-      ">Payment QR Code</div>
-
-      <div style="
-        font-family: 'Cinzel', serif;
-        font-size: clamp(0.85rem, 2.5vw, 1.1rem);
-        letter-spacing: 0.08em;
-        color: var(--ivory);
-        margin-bottom: 0.3rem;
-      ">${label}</div>
-
-      <div style="
-        font-family: 'EB Garamond', serif;
-        font-size: clamp(1.4rem, 4vw, 2rem);
-        color: ${ac.color};
-        font-weight: 600;
-        margin-bottom: 1.8rem;
-      ">${amt}</div>
-
-      <!-- QR Code Box -->
-      <div style="
-        display: inline-block;
-        background: #fff;
-        padding: 14px;
-        border: 2px solid ${ac.border};
-        margin-bottom: 1.5rem;
-        position: relative;
-      ">
-        <img
-          src="${qrUrl}"
-          alt="${label} QR Code"
-          width="180"
-          height="180"
-          style="display: block; image-rendering: pixelated;"
-          onerror="this.outerHTML=\`<div style='width:180px;height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f5f5f5;gap:0.5rem;'>
-            <svg width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='#999' stroke-width='1.5'><rect x='3' y='3' width='7' height='7'/><rect x='14' y='3' width='7' height='7'/><rect x='3' y='14' width='7' height='7'/><path d='M14 14h.01M14 17h.01M17 14h.01M17 17h.01M20 14h.01M20 17h.01M17 20h.01M20 20h.01'/></svg>
-            <span style='font-size:0.65rem;color:#aaa;font-family:sans-serif;text-align:center;padding:0 0.5rem;'>QR coming soon</span>
-          </div>\`"
-        />
-      </div>
-
-      <!-- Instructions -->
-      <div style="
-        font-family: 'EB Garamond', serif;
-        font-size: 0.9rem;
-        color: var(--parchment);
-        line-height: 1.9;
-        opacity: 0.8;
-        max-width: 360px;
-        margin: 0 auto 1.2rem;
-      ">
-        Scan the QR code using any UPI app
-        (Google Pay, PhonePe, Paytm, etc.) and
-        complete the payment of <strong style="color:${ac.color};">${amt}</strong>.
-      </div>
-
-      <div style="
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-family: 'Cinzel', serif;
-        font-size: 0.58rem;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        color: ${ac.color};
-        border: 1px solid ${ac.border};
-        padding: 0.5rem 1rem;
-        background: ${ac.bg};
-        opacity: 0.85;
-      ">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-        Upload payment screenshot in the field below
-      </div>
-    </div>
-  `;
 }
 
 function handlePaymentSelect(input) {
@@ -933,8 +838,12 @@ function nextStep(from) {
     if (!grade)            { showFormError('Please select your grade.'); return; }
     if (!exp)              { showFormError('Please select your MUN experience level.'); return; }
     
-    // Validate school email and board if checkbox is checked
+    // Validate school student fields if checkbox is checked
     if (isSchoolStudent) {
+      const board = document.getElementById('r-board').value;
+      if (!board) {
+        showFormError('Please select your board (CBSE or Cambridge).'); return;
+      }
       const schoolEmail = document.getElementById('r-school-email').value.trim();
       if (!schoolEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(schoolEmail)) {
         showFormError('Please enter a valid school email address.'); return;
@@ -942,11 +851,6 @@ function nextStep(from) {
       // Check if email verification is enabled and email is verified
       if (VERIFICATION_API_URL !== 'YOUR_VERIFICATION_API_URL' && !isEmailVerified) {
         showFormError('Please wait for email verification to complete, or make sure your school email is verified.'); return;
-      }
-      // Require board selection
-      const board = document.getElementById('r-school-board')?.value;
-      if (!board) {
-        showFormError('Please select your board (CBSE or Cambridge).'); return;
       }
     }
     
@@ -1034,8 +938,9 @@ async function submitForm() {
     phone: document.getElementById('r-phone').value.trim(),
     grade: document.getElementById('r-grade').value,
     experience: document.getElementById('r-exp').value,
-    board: document.getElementById('r-school-board')?.value || '',
     isSchoolStudent: document.getElementById('r-is-school-student').checked,
+    board: document.getElementById('r-board').value || '',
+    schoolEmail: document.getElementById('r-school-email').value.trim().toLowerCase() || '',
     pref1Committee: document.getElementById('r-committee-1').value,
     pref1Country: document.getElementById('r-country-1').value.trim(),
     pref2Committee: document.getElementById('r-committee-2').value || '',
