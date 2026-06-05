@@ -2,6 +2,8 @@
 
 
 
+
+
 /* ══════════════════════════════════════
    DATA
 ══════════════════════════════════════ */
@@ -10,6 +12,16 @@ let committees = [];
 // Fetch committees from AppScript
 async function loadCommittees() {
   try {
+    // ── SessionStorage cache (5 min TTL) ──
+    const cached   = sessionStorage.getItem('pgmun_committees');
+    const cachedTs = sessionStorage.getItem('pgmun_committees_ts');
+    if (cached && cachedTs && Date.now() - Number(cachedTs) < 2 * 60 * 1000) {
+      committees = JSON.parse(cached);
+      renderCommittees();
+      console.log('✅ Committees loaded from cache');
+      return;
+    }
+
     const res = await fetch(COMMITTEES_SCRIPT_URL + '?type=committees', {
       method: 'GET',
       redirect: 'follow'
@@ -23,13 +35,9 @@ async function loadCommittees() {
     
     if (Array.isArray(data)) {
       committees = data;
-      
-      // DEBUG: Log all committee names from Google Sheets
-      console.log('📋 Committee names from Google Sheets:');
-      committees.forEach(c => {
-        console.log(`  - "${c.name}"`);
-      });
-      
+      // Cache it
+      sessionStorage.setItem('pgmun_committees', JSON.stringify(data));
+      sessionStorage.setItem('pgmun_committees_ts', Date.now());
       renderCommittees();
       console.log('✅ Loaded', committees.length, 'committees');
     } else {
@@ -123,9 +131,24 @@ const PHOTO_API_URL = 'https://script.google.com/macros/s/AKfycbxzZEuZmqV67_KkJV
 // Fetch photos and populate imageUrl fields
 async function loadPhotos() {
   try {
+    // ── SessionStorage cache (5 min TTL) ──
+    const cached   = sessionStorage.getItem('pgmun_photos');
+    const cachedTs = sessionStorage.getItem('pgmun_photos_ts');
+    if (cached && cachedTs && Date.now() - Number(cachedTs) < 2 * 60 * 1000) {
+      const photos = JSON.parse(cached);
+      secretariat.forEach(member => { if (photos[member.name]) member.imageUrl = photos[member.name]; });
+      renderSecretariat();
+      console.log('✅ Photos loaded from cache');
+      return;
+    }
+
     const response = await fetch(PHOTO_API_URL);
     const photos = await response.json();
     
+    // Cache it
+    sessionStorage.setItem('pgmun_photos', JSON.stringify(photos));
+    sessionStorage.setItem('pgmun_photos_ts', Date.now());
+
     // Match names and fill in imageUrl
     secretariat.forEach(member => {
       if (photos[member.name]) {
@@ -735,9 +758,9 @@ function updatePaymentInfo() {
   const badge = document.getElementById('student-type-badge');
   const amount = document.getElementById('payment-amount');
   // ⚠️ CONFIGURE QR CLOUDINARY URLs HERE:
-  const CBSE_QR_URL      = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto/q_auto/PGMUN_CBSE_Insider_jcpyoa.png';
-  const CAMBRIDGE_QR_URL = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto/q_auto/PGMUN_Cambridge_Insider_kwub4r.png';
-  const EXTERNAL_QR_URL  = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto/q_auto/PGMUN_Outsider_muka5r.png';
+  const CBSE_QR_URL      = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto,q_auto/PGMUN_CBSE_Insider_jcpyoa.png';
+  const CAMBRIDGE_QR_URL = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto,q_auto/PGMUN_Cambridge_Insider_kwub4r.png';
+  const EXTERNAL_QR_URL  = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto,q_auto/PGMUN_Outsider_muka5r.png';
 
   const INTERNAL_AMOUNT = '₹2,400';
   const EXTERNAL_AMOUNT = '₹2,700';
@@ -1200,7 +1223,7 @@ function dismissAnnouncement() {
 // Poll every 5 minutes once URL is set
 if (APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL') {
   fetchAnnouncements();
-  setInterval(fetchAnnouncements, 5 * 60 * 1000);
+  setInterval(fetchAnnouncements, 2 * 60 * 1000);
 } else {
   // Hide loading state immediately in dev mode
   setTimeout(() => {
@@ -1331,8 +1354,8 @@ async function checkRegistrationStatus() {
    INIT
 ══════════════════════════════════════ */
 checkRegistrationStatus(); // Check reg status first — overlay if closed
-loadCommittees(); // Load committees from AppScript
-loadPhotos(); // Load photos from Google Sheets
+// Fire both fetches in parallel instead of sequentially
+Promise.all([loadCommittees(), loadPhotos()]);
 
 /* ══════════════════════════════════════
    SCROLL TO TOP FUNCTIONALITY
