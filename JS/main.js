@@ -532,7 +532,6 @@ function toggleSchoolStudent() {
     gradeSelect.style.cursor = 'not-allowed';
     gradeSelect.title = 'Verify your school email first';
     gradeSelect.value = '';
-    removeGrade8();
   } else {
     boardField.style.display = 'none';
     emailField.style.display = 'none';
@@ -542,7 +541,6 @@ function toggleSchoolStudent() {
     gradeSelect.style.cursor = 'pointer';
     gradeSelect.title = '';
     gradeSelect.value = '';
-    removeGrade8();
     const badge = document.getElementById('email-verification-badge');
     const input = document.getElementById('r-school-email');
     const helpText = document.getElementById('email-help-text');
@@ -552,6 +550,7 @@ function toggleSchoolStudent() {
     helpText.textContent = 'Enter your official Phoenix Greens email for verification';
     helpText.style.color = 'var(--muted)';
     isEmailVerified = false;
+    updateIPPhotoOption();
   }
 }
 
@@ -575,33 +574,16 @@ function toggleBoardEmail() {
     input.style.borderColor = 'var(--border)';
     document.getElementById('email-verification-badge').style.display = 'none';
     isEmailVerified = false;
+    updateIPPhotoOption();
     const gradeSelect = document.getElementById('r-grade');
     gradeSelect.disabled = true;
     gradeSelect.style.opacity = '0.4';
     gradeSelect.style.cursor = 'not-allowed';
     gradeSelect.title = 'Verify your school email first';
     gradeSelect.value = '';
-    removeGrade8();
   } else {
     emailField.style.display = 'none';
   }
-}
-
-function addGrade8() {
-  const gradeSelect = document.getElementById('r-grade');
-  if (!gradeSelect.querySelector('option[value="Grade 8"]')) {
-    const opt = document.createElement('option');
-    opt.value = 'Grade 8';
-    opt.textContent = 'Grade 8';
-    gradeSelect.insertBefore(opt, gradeSelect.options[1]);
-  }
-}
-
-function removeGrade8() {
-  const gradeSelect = document.getElementById('r-grade');
-  const opt = gradeSelect.querySelector('option[value="Grade 8"]');
-  if (opt) opt.remove();
-  if (gradeSelect.value === 'Grade 8') gradeSelect.value = '';
 }
 
 /* ══════════════════════════════════════
@@ -611,6 +593,32 @@ const VERIFICATION_API_URL = 'https://script.google.com/macros/s/AKfycbyVmOVGH6b
 const VERIFICATION_TOKEN = 'pgmun2026_verify_xK9$mQ';
 let verificationTimeout;
 let isEmailVerified = false;
+
+// Shows/hides "International Press Corp — IP Photography" in all 3 committee
+// preference dropdowns depending on whether the student's school email is verified.
+function updateIPPhotoOption() {
+  ['r-committee-1', 'r-committee-2', 'r-committee-3'].forEach(id => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    const existing = select.querySelector('option[value="IP-PHOTO"]');
+    if (isEmailVerified) {
+      if (!existing) {
+        const opt = document.createElement('option');
+        opt.value = 'IP-PHOTO';
+        opt.textContent = 'International Press Corp — IP Photography';
+        const ipJournalism = select.querySelector('option[value="IP"]');
+        if (ipJournalism) {
+          ipJournalism.insertAdjacentElement('afterend', opt);
+        } else {
+          select.appendChild(opt);
+        }
+      }
+    } else {
+      if (existing) existing.remove();
+      if (select.value === 'IP-PHOTO') select.value = '';
+    }
+  });
+}
 
 async function verifySchoolEmail(email) {
   const badge = document.getElementById('email-verification-badge');
@@ -622,6 +630,7 @@ async function verifySchoolEmail(email) {
   
   // Reset state
   isEmailVerified = false;
+  updateIPPhotoOption();
   
   // Hide badge if email is empty
   if (!email || email.trim() === '') {
@@ -695,7 +704,7 @@ async function verifySchoolEmail(email) {
         gradeSelectV.style.opacity = '1';
         gradeSelectV.style.cursor = 'pointer';
         gradeSelectV.title = '';
-        addGrade8();
+        updateIPPhotoOption();
       } else {
         // Email not found — keep grade locked, no Grade 8
         isEmailVerified = false;
@@ -705,7 +714,7 @@ async function verifySchoolEmail(email) {
         gradeSelectNF.style.cursor = 'not-allowed';
         gradeSelectNF.title = 'Verify your school email first';
         gradeSelectNF.value = '';
-        removeGrade8();
+        updateIPPhotoOption();
         badge.style.background = 'rgba(239,68,68,0.1)';
         badge.style.color = '#f87171';
         badge.style.border = '1px solid rgba(239,68,68,0.3)';
