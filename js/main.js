@@ -4,6 +4,9 @@
 
 
 
+
+
+
 /* ══════════════════════════════════════
    DATA
 ══════════════════════════════════════ */
@@ -515,6 +518,99 @@ function addAwardEntry() {
   container.appendChild(entry);
 }
 
+/* ══════════════════════════════════════
+   REGISTRATION FORM AUTOSAVE / RESTORE
+   Fixes data loss when the user leaves the page
+   to pay (gateway redirect, app-switch, tab kill,
+   accidental reload) and comes back.
+══════════════════════════════════════ */
+const REG_DRAFT_KEY = 'pgmun_reg_draft';
+const REG_STEP_KEY  = 'pgmun_reg_step';
+
+const REG_FIELD_IDS = [
+  'r-fname', 'r-lname', 'r-school', 'r-email', 'r-phone',
+  'r-grade', 'r-exp', 'r-is-school-student', 'r-board',
+  'r-school-email', 'r-committee-1', 'r-country-1',
+  'r-committee-2', 'r-country-2', 'r-committee-3', 'r-country-3',
+  'r-note'
+];
+
+function saveRegDraft() {
+  try {
+    const draft = {};
+    REG_FIELD_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      draft[id] = (el.type === 'checkbox') ? el.checked : el.value;
+    });
+    localStorage.setItem(REG_DRAFT_KEY, JSON.stringify(draft));
+  } catch (e) {
+    console.warn('Could not save registration draft:', e);
+  }
+}
+
+function restoreRegDraft() {
+  try {
+    const raw = localStorage.getItem(REG_DRAFT_KEY);
+    if (!raw) return;
+    const draft = JSON.parse(raw);
+
+    REG_FIELD_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el || !(id in draft)) return;
+      if (el.type === 'checkbox') {
+        el.checked = draft[id];
+      } else {
+        el.value = draft[id];
+      }
+    });
+
+    // Re-run dependent UI logic so dropdowns/fields match restored values
+    if (document.getElementById('r-is-school-student')?.checked) {
+      toggleSchoolStudent();
+      document.getElementById('r-is-school-student').checked = true;
+      const boardField = document.getElementById('board-select-field');
+      if (boardField) boardField.style.display = 'block';
+      if (draft['r-board']) {
+        document.getElementById('r-board').value = draft['r-board'];
+        toggleBoardEmail();
+        document.getElementById('r-school-email').value = draft['r-school-email'] || '';
+      }
+    }
+
+    // Restore the step they were on (default to step 1 if none saved)
+    const savedStep = parseInt(localStorage.getItem(REG_STEP_KEY) || '1', 10);
+    if (savedStep >= 1 && savedStep <= 5) {
+      goToStep(savedStep);
+    }
+
+    console.log('✅ Registration draft restored');
+  } catch (e) {
+    console.warn('Could not restore registration draft:', e);
+  }
+}
+
+// Clear the saved draft (call this after a successful submission)
+function clearRegDraft() {
+  localStorage.removeItem(REG_DRAFT_KEY);
+  localStorage.removeItem(REG_STEP_KEY);
+}
+
+// Save on every keystroke/change, and save current step whenever it changes
+document.addEventListener('input', e => {
+  if (REG_FIELD_IDS.includes(e.target.id)) saveRegDraft();
+});
+document.addEventListener('change', e => {
+  if (REG_FIELD_IDS.includes(e.target.id)) saveRegDraft();
+});
+
+// Restore as soon as the registration form exists in the DOM
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', restoreRegDraft);
+} else {
+  restoreRegDraft();
+}
+
 /* ══ STUDENT CATEGORY & PAYMENT ══ */
 
 // Step 1: Checkbox -> show board dropdown, hide email field
@@ -854,6 +950,7 @@ function goToStep(n) {
   });
   const el = document.getElementById('reg-step-' + n);
   if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 120, behavior: 'smooth' });
+  try { localStorage.setItem(REG_STEP_KEY, String(n)); } catch (e) {}
 }
 
 function nextStep(from) {
@@ -1013,6 +1110,7 @@ async function submitForm() {
     const result = await (await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) })).json();
     if (result.success) {
       localStorage.setItem(SPAM_KEY, Date.now().toString());
+      clearRegDraft();
       document.getElementById('reg-step-5').innerHTML = `
         <div style="text-align:center;padding:3rem 1rem;">
           <div style="font-size:2.5rem;margin-bottom:1rem;">✅</div>
