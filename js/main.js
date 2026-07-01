@@ -1,12 +1,4 @@
 
-
-
-
-
-
-
-
-
 /* ══════════════════════════════════════
    DATA
 ══════════════════════════════════════ */
@@ -1043,14 +1035,6 @@ function buildConfirmSummary() {
 }
 
 async function submitForm() {
-  const SPAM_KEY = 'pgmun_last_reg_ts';
-  const COOLDOWN = 12 * 60 * 60 * 1000;
-  const last = localStorage.getItem(SPAM_KEY);
-  if (last && (Date.now() - parseInt(last)) < COOLDOWN) {
-    const rem  = COOLDOWN - (Date.now() - parseInt(last));
-    showFormError('Already submitted. Try again in ' + Math.floor(rem/3600000) + 'h ' + Math.floor((rem%3600000)/60000) + 'm.');
-    return;
-  }
   const btn = document.getElementById('pgmun-submit-btn');
   btn.disabled = true; btn.textContent = 'Submitting...';
 
@@ -1109,7 +1093,6 @@ async function submitForm() {
   try {
     const result = await (await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) })).json();
     if (result.success) {
-      localStorage.setItem(SPAM_KEY, Date.now().toString());
       clearRegDraft();
       document.getElementById('reg-step-5').innerHTML = `
         <div style="text-align:center;padding:3rem 1rem;">
@@ -1580,5 +1563,4 @@ window.showPage = function(name) {
   _origShowPage(name);
   if (name === 'schedule') loadSchedule();
 };
-
 
