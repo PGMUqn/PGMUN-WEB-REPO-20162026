@@ -83,7 +83,7 @@ const secretariat = [
   
   // USG Members - Smaller circular cards
   { 
-    name: "Ishaan Kripesh", 
+    name: "Chaitanya Bora", 
     role: "USG Marketing", 
     type: "usg",
     imageUrl: "" // Will be filled from Google Sheets
