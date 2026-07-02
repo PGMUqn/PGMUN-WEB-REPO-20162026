@@ -202,7 +202,11 @@ const committeeIcons = {
   'IP': 'https://res.cloudinary.com/dbuei75st/image/upload/ar_1:1,c_auto/ar_1:1,c_auto/e_brightness:100/e_contrast:level_-100;type_sigmoidal/IP__1_-removebg-preview_1_ska2jz.png',
   'International Press': 'https://res.cloudinary.com/dbuei75st/image/upload/ar_1:1,c_auto/ar_1:1,c_auto/e_brightness:100/e_contrast:level_-100;type_sigmoidal/IP__1_-removebg-preview_1_ska2jz.png',
   'INTERNATIONAL PRESS': 'https://res.cloudinary.com/dbuei75st/image/upload/ar_1:1,c_auto/ar_1:1,c_auto/e_brightness:100/e_contrast:level_-100;type_sigmoidal/IP__1_-removebg-preview_1_ska2jz.png',
-  'international press': 'https://res.cloudinary.com/dbuei75st/image/upload/ar_1:1,c_auto/ar_1:1,c_auto/e_brightness:100/e_contrast:level_-100;type_sigmoidal/IP__1_-removebg-preview_1_ska2jz.png'
+  'international press': 'https://res.cloudinary.com/dbuei75st/image/upload/ar_1:1,c_auto/ar_1:1,c_auto/e_brightness:100/e_contrast:level_-100;type_sigmoidal/IP__1_-removebg-preview_1_ska2jz.png',
+  // Yom Kippur War Historic Crisis Committee
+  'YKW': 'https://res.cloudinary.com/dbuei75st/image/upload/ar_1:1,c_auto/image-removebg-preview_4_bf2qme.png',
+  'YOM KIPPUR WAR': 'https://res.cloudinary.com/dbuei75st/image/upload/ar_1:1,c_auto/image-removebg-preview_4_bf2qme.png',
+  'YKW HCC': 'https://res.cloudinary.com/dbuei75st/image/upload/ar_1:1,c_auto/image-removebg-preview_4_bf2qme.png'
 };
 
 function buildCommitteeCard(c) {
