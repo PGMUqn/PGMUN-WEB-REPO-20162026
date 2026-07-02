@@ -215,10 +215,13 @@ function buildCommitteeCard(c) {
   const takenCount = c.countries ? c.countries.filter(country => country.status === 'Taken').length : 0;
   const openCount = totalCountries - takenCount;
   
-  const dots = Array.from({length: Math.min(totalCountries, 20)}, (_, i) => {
-    const taken = i < takenCount;
-    return `<div class="pos-dot ${taken ? 'pos-taken' : 'pos-open'}"></div>`;
-  }).join('');
+  // Create progress bar instead of dots
+  const percentageTaken = totalCountries > 0 ? (takenCount / totalCountries) * 100 : 0;
+  const progressBar = `
+    <div style="width:100%; height:8px; background:rgba(155,32,32,0.2); border-radius:2px; overflow:hidden; margin-bottom:0.6rem;">
+      <div style="width:${percentageTaken}%; height:100%; background:var(--phoenix); transition:width 0.3s ease; border-radius:2px;"></div>
+    </div>
+  `;
 
   const status = takenCount === totalCountries ? 'full' : takenCount > totalCountries * 0.7 ? 'filling' : 'open';
   const badgeClass = status === 'open' ? 'badge-open' : status === 'filling' ? 'badge-filling' : 'badge-full';
@@ -244,7 +247,7 @@ function buildCommitteeCard(c) {
         <div class="card-acronym">${c.name}</div>
         <div class="card-name">${c.name}</div>
         <div class="card-agenda">${c.agenda}</div>
-        <div class="position-matrix">${dots}</div>
+        <div class="position-matrix">${progressBar}</div>
         <div class="matrix-legend">
           <span><div class="legend-dot" style="background:var(--phoenix)"></div>${takenCount} Taken</span>
           <span><div class="legend-dot" style="background:rgba(74,222,128,0.45)"></div>${openCount} Open</span>
