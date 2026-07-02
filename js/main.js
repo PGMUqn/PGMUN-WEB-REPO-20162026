@@ -2,6 +2,12 @@
 /* ══════════════════════════════════════
    DATA
 ══════════════════════════════════════ */
+// Clear cache on page load — every refresh gets fresh data
+sessionStorage.removeItem('pgmun_committees');
+sessionStorage.removeItem('pgmun_committees_ts');
+sessionStorage.removeItem('pgmun_photos');
+sessionStorage.removeItem('pgmun_photos_ts');
+
 let committees = [];
 
 // Fetch committees from AppScript
@@ -404,6 +410,8 @@ function openCommitteeModal(committeeId) {
   
   modal.style.display = 'block';
   document.body.style.overflow = 'hidden';
+  // Track modal opening in browser history for back button
+  history.pushState({ modalOpen: true }, '', window.location.href);
 }
 
 function closeCommitteeModal() {
@@ -411,6 +419,14 @@ function closeCommitteeModal() {
   modal.style.display = 'none';
   document.body.style.overflow = 'auto';
 }
+
+// ✅ Handle back button when modal is open (mobile + desktop)
+window.addEventListener('popstate', () => {
+  const modal = document.getElementById('committee-modal');
+  if (modal && modal.style.display === 'block') {
+    closeCommitteeModal();
+  }
+});
 
 /* ══════════════════════════════════════
    COUNTDOWN
@@ -857,32 +873,38 @@ function updatePaymentInfo() {
   // ⚠️ CONFIGURE QR CLOUDINARY URLs HERE:
   const CBSE_QR_URL      = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto,q_auto/PGMUN_CBSE_Insider_jcpyoa.png';
   const CAMBRIDGE_QR_URL = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto,q_auto/PGMUN_Cambridge_Insider_kwub4r.png';
-  const EXTERNAL_QR_URL  = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto,q_auto/PGMUN_Outsider_muka5r.png';
+  const EXTERNAL_QR_URL  = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto/q_auto/qrcode_369552919_2016b7831cf6b5290fe35b24139c10bc_sjkxtk.png';
 
-  const INTERNAL_AMOUNT = '₹2,400';
-  const EXTERNAL_AMOUNT = '₹2,700';
+  const INTERNAL_AMOUNT = '₹2,700';
+  const EXTERNAL_AMOUNT = '₹3,000';
 
   // Hide all QR blocks first (null-safe)
   const qrCbse      = document.getElementById('qr-cbse');
   const qrCambridge = document.getElementById('qr-cambridge');
   const qrExternal  = document.getElementById('qr-external');
+  const internalPaymentInstructions = document.getElementById('internal-payment-instructions');
+  
   if (qrCbse)      qrCbse.style.display      = 'none';
   if (qrCambridge) qrCambridge.style.display  = 'none';
   if (qrExternal)  qrExternal.style.display   = 'none';
+  if (internalPaymentInstructions) internalPaymentInstructions.style.display = 'none';
 
   if (isSchoolStudent && board === 'CBSE') {
     badge.textContent = 'Phoenix Greens Student — CBSE';
     amount.textContent = INTERNAL_AMOUNT;
-    if (qrCbse) { qrCbse.style.display = 'block'; document.getElementById('qr-cbse-img').src = CBSE_QR_URL; }
+    // Show school payment instructions instead of QR
+    if (internalPaymentInstructions) { internalPaymentInstructions.style.display = 'block'; }
 
   } else if (isSchoolStudent && board === 'Cambridge') {
     badge.textContent = 'Phoenix Greens Student — Cambridge';
     amount.textContent = INTERNAL_AMOUNT;
-    if (qrCambridge) { qrCambridge.style.display = 'block'; document.getElementById('qr-cambridge-img').src = CAMBRIDGE_QR_URL; }
+    // Show school payment instructions instead of QR
+    if (internalPaymentInstructions) { internalPaymentInstructions.style.display = 'block'; }
 
   } else {
     badge.textContent = 'External Participant';
     amount.textContent = EXTERNAL_AMOUNT;
+    // Show QR code and payment button for external
     if (qrExternal) { qrExternal.style.display = 'block'; document.getElementById('qr-external-img').src = EXTERNAL_QR_URL; }
   }
 }
@@ -1093,6 +1115,10 @@ async function submitForm() {
   try {
     const result = await (await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) })).json();
     if (result.success) {
+      // ✅ SET 12-HOUR COOLDOWN
+      const cooldownExpiry = Date.now() + (12 * 60 * 60 * 1000); // 12 hours
+      localStorage.setItem('pgmun_submission_cooldown', cooldownExpiry.toString());
+      
       clearRegDraft();
       document.getElementById('reg-step-5').innerHTML = `
         <div style="text-align:center;padding:3rem 1rem;">
