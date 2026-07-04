@@ -878,12 +878,12 @@ function updatePaymentInfo() {
   const badge = document.getElementById('student-type-badge');
   const amount = document.getElementById('payment-amount');
   // ⚠️ CONFIGURE QR CLOUDINARY URLs HERE:
-  const CBSE_QR_URL      = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto,q_auto/PGMUN_CBSE_Insider_jcpyoa.png';
-  const CAMBRIDGE_QR_URL = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto,q_auto/PGMUN_Cambridge_Insider_kwub4r.png';
-  const EXTERNAL_QR_URL  = 'https://res.cloudinary.com/dbuei75st/image/upload/f_auto/q_auto/qrcode_369552919_2016b7831cf6b5290fe35b24139c10bc_sjkxtk.png';
+  const CBSE_QR_URL      = 'https://res.cloudinary.com/dbuei75st/image/upload/PGMUN_CBSE_Insider_d59vdp.png';
+  const CAMBRIDGE_QR_URL = 'https://res.cloudinary.com/dbuei75st/image/upload/PGMUN_CBSE_Insider_d59vdp.png';
+  const EXTERNAL_QR_URL  = 'https://res.cloudinary.com/dbuei75st/image/upload/PGMUN_CBSE_Insider_d59vdp.png';
 
-  const INTERNAL_AMOUNT = '₹2,700';
-  const EXTERNAL_AMOUNT = '₹3,000';
+  const INTERNAL_AMOUNT = '₹2,400';
+  const EXTERNAL_AMOUNT = '₹2,400';
 
   // Hide all QR blocks first (null-safe)
   const qrCbse      = document.getElementById('qr-cbse');
@@ -961,6 +961,370 @@ function validatePaymentProof(file) {
 }
 
 /* ══ STEP NAVIGATION ══ */
+/* ══════════════════════════════════════
+   PAYMENT SCREENSHOT WARNING MODAL
+══════════════════════════════════════ */
+function showPaymentScreenshotModal() {
+  // Remove any existing modal first
+  const existing = document.getElementById('payment-screenshot-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'payment-screenshot-modal';
+  modal.tabIndex = -1; // Make it focusable
+  
+  let canDismiss = false; // Track if 15 seconds have passed
+  let timeRemaining = 15; // Countdown timer
+  
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1.5rem;
+    animation: fadeIn 0.3s ease;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  `;
+
+  modal.innerHTML = `
+    <div style="
+      max-width: 620px;
+      width: 100%;
+      background: linear-gradient(135deg, rgba(20,15,15,0.98) 0%, rgba(25,18,18,0.98) 100%);
+      border: 2px solid rgba(155,32,32,0.5);
+      border-radius: 8px;
+      padding: clamp(2rem, 5vw, 3.5rem);
+      box-shadow: 0 20px 60px rgba(155,32,32,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+      text-align: center;
+      animation: slideUp 0.4s ease;
+    ">
+      <!-- Icon -->
+      <div style="
+        width: 72px;
+        height: 72px;
+        background: rgba(155,32,32,0.15);
+        border: 2px solid rgba(155,32,32,0.4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+      ">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 9v2m0 4v2m-9-11h18a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
+          <rect x="7" y="13" width="10" height="6" rx="1" fill="#fbbf24" opacity="0.2"/>
+        </svg>
+      </div>
+
+      <!-- Heading -->
+      <h2 style="
+        font-family: 'Cinzel', serif;
+        font-size: clamp(1.4rem, 4vw, 2rem);
+        letter-spacing: 0.1em;
+        color: #fbbf24;
+        text-transform: uppercase;
+        margin: 0 0 1.5rem;
+        line-height: 1.3;
+      ">⚠️ Important: Screenshot Required</h2>
+
+      <!-- Main Message -->
+      <p style="
+        font-family: 'EB Garamond', serif;
+        font-size: clamp(0.95rem, 2vw, 1.1rem);
+        color: #f5f0e8;
+        line-height: 1.9;
+        margin-bottom: 1.8rem;
+        opacity: 0.9;
+      ">
+        After completing your payment, you <strong style="color: #f87171;">MUST</strong> take a screenshot of your payment confirmation and upload it. <strong style="color: #fbbf24;">Your registration details will only be recorded if you upload this screenshot.</strong>
+      </p>
+
+      <!-- Warning Box -->
+      <div style="
+        background: rgba(155,32,32,0.2);
+        border-left: 4px solid #f87171;
+        padding: 1.2rem 1.5rem;
+        margin-bottom: 1.8rem;
+        border-radius: 4px;
+        text-align: left;
+      ">
+        <p style="
+          font-family: 'EB Garamond', serif;
+          font-size: 0.95rem;
+          color: #f87171;
+          margin: 0 0 0.8rem;
+          font-weight: 600;
+        ">⚠️ CRITICAL - Without your screenshot:</p>
+        <ul style="
+          font-family: 'EB Garamond', serif;
+          font-size: 0.9rem;
+          color: #c8b99a;
+          margin: 0;
+          padding-left: 1.5rem;
+          line-height: 1.8;
+        ">
+          <li style="margin-bottom: 0.4rem;">Your <strong style="color: #f87171;">registration details will NOT come through</strong> to our system</li>
+          <li style="margin-bottom: 0.4rem;">You will <strong style="color: #f87171;">NOT be allocated</strong> as a delegate</li>
+          <li style="margin-bottom: 0.4rem;">Your payment will <strong style="color: #f87171;">NOT be verified</strong></li>
+          <li>You will <strong style="color: #f87171;">NOT be able to participate</strong> in PGMUN 2026</li>
+        </ul>
+      </div>
+
+      <!-- Instructions -->
+      <div style="
+        background: rgba(76,175,80,0.1);
+        border-left: 4px solid #4ade80;
+        padding: 1.2rem 1.5rem;
+        margin-bottom: 1.8rem;
+        border-radius: 4px;
+        text-align: left;
+      ">
+        <p style="
+          font-family: 'EB Garamond', serif;
+          font-size: 0.95rem;
+          color: #4ade80;
+          margin: 0 0 0.8rem;
+          font-weight: 600;
+        ">✓ CRITICAL STEPS - Do not skip:</p>
+        <ol style="
+          font-family: 'EB Garamond', serif;
+          font-size: 0.9rem;
+          color: #c8b99a;
+          margin: 0;
+          padding-left: 1.5rem;
+          line-height: 1.8;
+        ">
+          <li style="margin-bottom: 0.4rem;">Complete your payment on the next page</li>
+          <li style="margin-bottom: 0.4rem;"><strong style="color: #4ade80;">Take a clear screenshot</strong> showing the payment confirmation message</li>
+          <li style="margin-bottom: 0.4rem;"><strong style="color: #4ade80;">Upload it in the payment proof box</strong> on this page <strong style="color: #f87171;">BEFORE you submit</strong></li>
+          <li><strong style="color: #4ade80;">Submit your registration</strong> - this records your details in our system</li>
+        </ol>
+      </div>
+
+      <!-- Website Disappear Warning -->
+      <div style="
+        background: rgba(155,32,32,0.15);
+        border: 1px dashed rgba(155,32,32,0.4);
+        padding: 1rem 1.2rem;
+        margin-bottom: 2rem;
+        border-radius: 4px;
+      ">
+        <p style="
+          font-family: 'EB Garamond', serif;
+          font-size: 0.85rem;
+          color: #c8b99a;
+          margin: 0;
+          line-height: 1.7;
+          opacity: 0.9;
+        ">
+          <strong style="color: #fbbf24;">⚠️ If the website disappears during submission:</strong> Don't panic. Save your screenshot in a safe place. When the website comes back online, re-register and upload your screenshot again. This will ensure your registration details come through and you get allocated.
+        </p>
+      </div>
+
+      <!-- Timer Display -->
+      <div id="modal-timer" style="
+        background: rgba(155,32,32,0.3);
+        border: 1px solid rgba(155,32,32,0.5);
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border-radius: 4px;
+        text-align: center;
+      ">
+        <p style="
+          font-family: 'EB Garamond', serif;
+          font-size: 0.9rem;
+          color: #fbbf24;
+          margin: 0;
+          font-weight: 600;
+        ">
+          Please read carefully... You can close this in <span id="countdown-text" style="color: #f87171; font-size: 1.1rem; font-weight: bold;">15</span> seconds
+        </p>
+      </div>
+
+      <!-- Close Button -->
+      <button id="modal-close-btn" onclick="event.stopPropagation(); document.getElementById('payment-screenshot-modal').remove()" style="
+        display: block;
+        width: 100%;
+        padding: 1rem 1.5rem;
+        background: rgba(100,100,100,0.5);
+        color: #c8b99a;
+        border: 1px solid rgba(100,100,100,0.6);
+        border-radius: 4px;
+        font-family: 'Cinzel', serif;
+        font-size: 0.85rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: not-allowed;
+        transition: all 0.3s ease;
+        opacity: 0.6;
+      ">
+        🔒 Wait for timer to close (15s)
+      </button>
+
+      <style>
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        /* Mobile optimization */
+        @media (max-width: 767px) {
+          #payment-screenshot-modal {
+            padding: 0.75rem !important;
+          }
+          #payment-screenshot-modal > div {
+            max-width: 100% !important;
+            margin: auto !important;
+          }
+        }
+      </style>
+    </div>
+  `;
+
+  // Prevent dismissal by clicking during first 15 seconds
+  modal.addEventListener('click', (e) => {
+    if (canDismiss) {
+      modal.remove();
+    } else {
+      e.stopPropagation();
+    }
+  });
+
+  // Start countdown timer
+  let autoCloseCountdownInterval = null;
+  const countdownInterval = setInterval(() => {
+    timeRemaining--;
+    const countdownText = document.getElementById('countdown-text');
+    const closeBtn = document.getElementById('modal-close-btn');
+    
+    if (countdownText) {
+      countdownText.textContent = timeRemaining;
+    }
+
+    if (timeRemaining <= 0) {
+      clearInterval(countdownInterval);
+      canDismiss = true;
+      
+      // Update button when timer expires
+      if (closeBtn) {
+        closeBtn.style.background = 'rgba(155,32,32,0.6)';
+        closeBtn.style.color = '#f5f0e8';
+        closeBtn.style.border = '1px solid rgba(155,32,32,0.8)';
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.style.opacity = '1';
+        closeBtn.textContent = '✓ Close Message (Click Anywhere)';
+        closeBtn.onmouseover = function() { this.style.background = 'rgba(155,32,32,0.8)'; };
+        closeBtn.onmouseout = function() { this.style.background = 'rgba(155,32,32,0.6)'; };
+      }
+      
+      // Update timer display
+      const timerDiv = document.getElementById('modal-timer');
+      if (timerDiv) {
+        timerDiv.innerHTML = `
+          <p style="
+            font-family: 'EB Garamond', serif;
+            font-size: 0.9rem;
+            color: #4ade80;
+            margin: 0;
+            font-weight: 600;
+          ">
+            ✓ You can now close this message (auto-closes in <span id="autoclose-countdown" style="color: #4ade80; font-weight: bold;">45</span> seconds)
+          </p>
+        `;
+        timerDiv.style.background = 'rgba(76,175,80,0.15)';
+        timerDiv.style.borderColor = 'rgba(76,175,80,0.4)';
+      }
+
+      // Live countdown for the remaining 45s until auto-close
+      let autoCloseRemaining = 45;
+      autoCloseCountdownInterval = setInterval(() => {
+        autoCloseRemaining--;
+        const el = document.getElementById('autoclose-countdown');
+        if (el) el.textContent = autoCloseRemaining;
+        if (autoCloseRemaining <= 0) {
+          clearInterval(autoCloseCountdownInterval);
+        }
+      }, 1000);
+    }
+  }, 1000);
+
+  // Auto-close after 60 seconds total (1 minute) if user hasn't dismissed
+  const autoCloseTimeout = setTimeout(() => {
+    if (modal && modal.parentNode) {
+      modal.remove(); // wrapped remove() (defined below) handles all cleanup
+    }
+  }, 60000);
+
+  // Dismiss on any keypress or touch (but only after 15 seconds have passed)
+  const handleEscape = (e) => {
+    if (canDismiss) {
+      modal.remove();
+    }
+  };
+  document.addEventListener('keydown', handleEscape);
+
+  const handleTouch = (e) => {
+    if (canDismiss) {
+      modal.remove();
+    }
+  };
+  modal.addEventListener('touchstart', handleTouch);
+
+  document.body.appendChild(modal);
+  
+  // Auto-focus and scroll to modal immediately on mobile/desktop
+  setTimeout(() => {
+    modal.focus();
+    modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    // For mobile, ensure we scroll to the top and modal is centered in viewport
+    if (window.innerWidth < 768) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => {
+        const contentBox = modal.querySelector('div[style*="max-width: 620px"]');
+        if (contentBox) {
+          contentBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
+  }, 50);
+  
+  // Prevent scrolling behind modal on mobile
+  const originalOverflow = document.body.style.overflow;
+  document.body.style.overflow = 'hidden';
+  
+  // Store original modal remove function to restore overflow and clear all timers
+  const originalRemove = modal.remove.bind(modal);
+  modal.remove = function() {
+    document.body.style.overflow = originalOverflow;
+    clearTimeout(autoCloseTimeout);
+    clearInterval(countdownInterval);
+    if (autoCloseCountdownInterval) clearInterval(autoCloseCountdownInterval);
+    document.removeEventListener('keydown', handleEscape);
+    modal.removeEventListener('touchstart', handleTouch);
+    originalRemove();
+  };
+}
+
 function goToStep(n) {
   [1,2,3,4,5].forEach(i => {
     const el = document.getElementById('reg-step-' + i);
@@ -1015,8 +1379,9 @@ function nextStep(from) {
     if (!country1) { showFormError('Please enter your 1st preference country.'); return; }
     goToStep(3);
   } else if (from === 3) {
-    // Moving to payment step - update payment info
+    // Moving to payment step - update payment info and show modal
     updatePaymentInfo();
+    showPaymentScreenshotModal();
     goToStep(4);
   } else if (from === 4) {
     // Validate payment proof uploaded
